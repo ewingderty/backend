@@ -30,7 +30,7 @@ function intentarConexion(reintentos) {
             }
         }
 
-        console.log("✅Conectado a MySQl")
+        console.log(`✅Conectado a MySQl en el intento ${reintentos}`)
      })
 }
 intentarConexion(1);
