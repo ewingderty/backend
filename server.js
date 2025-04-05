@@ -15,22 +15,22 @@ const db = mysql.createConnection({
     port: process.env.DB_PORT
 });
 
-const tiempoEspera = 20000;
+const tiempoEspera = 40000;
 function intentarConexion(reintentos) {
     db.connect(err => {
         if (err) {
-            console.log(`Error conectando a BaseDatos (intento ${reintentos});`);
+            console.log(`Error conectando a BaseDatos (intento ${reintentos})`);
 
             if (reintentos < 5) {
-                console.log(`Reintentando en ${tiempoEspera / 1000} segundos... (${5 - reintentos} intentos restantes);`);
+                console.log(`Reintentando en ${tiempoEspera / 1000} segundos... (${5 - reintentos} intentos restantes)`);
                 setTimeout(() => intentarConexion(reintentos + 1), tiempoEspera);
             } else {
-                console.error("No se ha podido establecer conexión con BaseDatos;");
+                console.error("No se ha podido establecer conexión con BaseDatos");
                 return;
             }
-        }
-
-        console.log(`✅Conectado a MySQl en el intento ${reintentos};`);
+        } else {
+            console.log(`✅Conectado a MySQl en el intento ${reintentos};`);
+        }        
     });
 }
 intentarConexion(1);
