@@ -29,7 +29,7 @@ function intentarConexion(reintentos) {
                 return;
             }
         } else {
-            console.log(`✅Conectado a MySQl en el intento ${reintentos};`);
+            console.log(`✅Conectado a MySQl en el intento ${reintentos}`);
         }        
     });
 }
@@ -95,4 +95,4 @@ app.post("/api/agregar", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Servidor corriendo en PORT: ${PORT}`));
