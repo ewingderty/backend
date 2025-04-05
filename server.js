@@ -1,11 +1,11 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const mysql = require("mysql2");
+require("dotenv").config()
+const express = require("express")
+const cors = require("cors")
+const mysql = require("mysql2")
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const app = express()
+app.use(cors())
+app.use(express.json())
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -13,66 +13,87 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT
-});
+})
+
+const tiempoEspera = 20000
+function intentarConexion(reintentos) {
+     db.connect(err => {
+        if (err) {
+            console.log(`Error conectando a BaseDatos (intento ${reintentos})`)
+
+            if (reintentos < 5) {
+                console.log(`Reintentando en ${tiempoEspera / 1000} segundos... (${5 - reintentos} intentos restantes)`)
+                setTimeout(intentarConexion(reintentos + 1), tiempoEspera)
+            } else {
+                console.error("No se ha podido establecer conexión con BaseDatos")
+                return;
+            }
+        }
+
+        console.log("✅Conectado a MySQl")
+     })
+}
+intentarConexion(1);
+
 
 db.connect(err => {
     if (err) {
-        console.error("Error conectando a MySQL:", err);
-        return;
+        console.error("Error conectando a MySQL:", err)
+        return
     }
-    console.log("Conectado a MySQL");
-});
+    console.log("Conectado a MySQL")
+})
 
 app.get("/api/datos", (req, res) => {
     db.query("SELECT * FROM songs", (err, results) => {
         if (err) {
-            res.status(500).send(err);
+            res.status(500).send(err)
         } else {
-            res.json(results);
+            res.json(results)
         }
-    });
-});
+    })
+})
 
 app.delete("/api/eliminar/:id", (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params
 
-    const query = "DELETE FROM songs WHERE id = ?";
+    const query = "DELETE FROM songs WHERE id = ?"
     db.query(query, [id], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: "Error eliminando la canción" });
+            return res.status(500).json({ error: "Error eliminando la canción" })
         }
-        res.status(200).json({ message: "Canción eliminada con éxito" });
-    });
-});
+        res.status(200).json({ message: "Canción eliminada con éxito" })
+    })
+})
 
 app.delete("/api/eliminartodo", (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params
 
-    const query = "DELETE FROM songs";
+    const query = "DELETE FROM songs"
     db.query(query, [id], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: "Error eliminando todas las canción" });
+            return res.status(500).json({ error: "Error eliminando todas las canción" })
         }
-        res.status(200).json({ message: "Canciones eliminadas con éxito" });
-    });
-});
+        res.status(200).json({ message: "Canciones eliminadas con éxito" })
+    })
+})
 
 // Ruta para agregar un nuevo registro
 app.post("/api/agregar", (req, res) => {
-    const { name, url } = req.body;
+    const { name, url } = req.body
 
     if (!name || !url) {
-        return res.status(400).json({ error: "Name and URL are required" });
+        return res.status(400).json({ error: "Name and URL are required" })
     }
 
-    const query = "INSERT INTO songs (name, url) VALUES (?, ?)";
+    const query = "INSERT INTO songs (name, url) VALUES (?, ?)"
     db.query(query, [name, url], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: "Error inserting data" });
+            return res.status(500).json({ error: "Error inserting data" })
         }
-        res.status(201).json({ message: "Data inserted successfully" });
-    });
-});
+        res.status(201).json({ message: "Data inserted successfully" })
+    })
+})
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`))
