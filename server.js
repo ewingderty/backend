@@ -36,13 +36,13 @@ function intentarConexion(reintentos) {
 intentarConexion(1);
 
 
-db.connect(err => {
-    if (err) {
-        console.error("Error conectando a MySQL:", err)
-        return
-    }
-    console.log("Conectado a MySQL")
-})
+// db.connect(err => {
+//     if (err) {
+//         console.error("Error conectando a MySQL:", err)
+//         return
+//     }
+//     console.log("Conectado a MySQL")
+// })
 
 app.get("/api/datos", (req, res) => {
     db.query("SELECT * FROM songs", (err, results) => {
